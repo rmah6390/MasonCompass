@@ -99,7 +99,6 @@ function Home() {
   );
 }
 
-
 function AppPages() {
   const navigate = useNavigate();
   const location = useLocation();
