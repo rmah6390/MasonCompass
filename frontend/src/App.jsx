@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import StudentProfile from "./components/StudentProfile";
 import "./App.css";
 
 function Home() {
