@@ -1,153 +1,208 @@
-.profile-page {
-  min-height: 100vh;
-  background-color: #f7f8f5;
-  font-family: Arial, sans-serif;
-  color: #24352d;
-}
 
-.profile-header {
-  background-color: #145a3c;
-  color: white;
-  padding: 25px;
-  text-align: center;
-}
+import { useState } from "react";
+import "./StudentProfile.css";
 
-.profile-header h1 {
-  margin: 0;
-  font-size: 30px;
-}
+function StudentProfile() {
+  const [name, setName] = useState("");
+  const [major, setMajor] = useState("");
+  const [year, setYear] = useState("");
+  const [interests, setInterests] = useState("");
+  const [skills, setSkills] = useState("");
+  const [careerGoal, setCareerGoal] = useState("");
 
-.profile-header p {
-  margin-bottom: 0;
-  font-size: 15px;
-}
+  const [savedProfile, setSavedProfile] = useState(null);
+  const [editing, setEditing] = useState(true);
+  const [message, setMessage] = useState("");
 
-.profile-container {
-  max-width: 650px;
-  margin: 35px auto;
-  padding: 0 15px 35px;
-}
+  function handleSave(e) {
+    e.preventDefault();
 
-.profile-card {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-}
+    if (!name.trim() || !major || !year) {
+      setMessage("Please enter your name, major, and academic year.");
+      return;
+    }
 
-.profile-card h2 {
-  margin-top: 0;
-  color: #145a3c;
-}
+    const profile = {
+      name,
+      major,
+      year,
+      interests,
+      skills,
+      careerGoal
+    };
 
-.profile-subtitle {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 25px;
-}
+    const isUpdate = savedProfile !== null;
 
-.profile-card label {
-  display: block;
-  font-weight: bold;
-  margin-top: 18px;
-  margin-bottom: 8px;
-}
-
-.profile-card input,
-.profile-card select,
-.profile-card textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-.profile-card input:focus,
-.profile-card select:focus,
-.profile-card textarea:focus {
-  outline: 2px solid #81b89a;
-  border-color: #145a3c;
-}
-
-.profile-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 25px;
-}
-
-.save-button {
-  background-color: #145a3c;
-  color: white;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  margin-top: 15px;
-}
-
-.save-button:hover {
-  background-color: #0d422b;
-}
-
-.cancel-button {
-  background-color: #e5e5e5;
-  color: #333;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 15px;
-}
-
-.profile-message {
-  padding: 14px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-}
-
-.success {
-  background-color: #dff2e5;
-  color: #17623a;
-}
-
-.error {
-  background-color: #ffe5e5;
-  color: #9c2222;
-}
-
-.profile-info {
-  background-color: #f7f8f5;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.profile-info p {
-  margin: 12px 0;
-  overflow-wrap: anywhere;
-}
-
-.recommendation-note {
-  margin-top: 25px;
-  padding: 18px;
-  background-color: #edf5ee;
-  border-left: 4px solid #145a3c;
-  border-radius: 5px;
-}
-
-.recommendation-note h3 {
-  margin-top: 0;
-}
-
-@media (max-width: 600px) {
-  .profile-card {
-    padding: 20px;
+    setSavedProfile(profile);
+    setEditing(false);
+    setMessage(
+      isUpdate
+        ? "Profile updated successfully!"
+        : "Profile saved successfully!"
+    );
   }
 
-  .profile-buttons {
-    flex-direction: column;
+  function handleEdit() {
+    setEditing(true);
+    setMessage("");
   }
+
+  function handleCancel() {
+    if (savedProfile) {
+      setName(savedProfile.name);
+      setMajor(savedProfile.major);
+      setYear(savedProfile.year);
+      setInterests(savedProfile.interests);
+      setSkills(savedProfile.skills);
+      setCareerGoal(savedProfile.careerGoal);
+      setEditing(false);
+    }
+    setMessage("");
+  }
+
+  return (
+    <div className="profile-page">
+      <header className="profile-header">
+        <h1>MasonCompass</h1>
+        <p>Student Profile & Preferences</p>
+      </header>
+
+      <main className="profile-container">
+        {message && (
+          <p className={
+            message.startsWith("Please")
+              ? "profile-message error"
+              : "profile-message success"
+          }>
+            {message}
+          </p>
+        )}
+
+        {editing ? (
+          <form onSubmit={handleSave} className="profile-card">
+            <h2>
+              {savedProfile ? "Edit Profile" : "Create Your Profile"}
+            </h2>
+
+            <p className="profile-subtitle">
+              Tell us about yourself to help discover
+              opportunities that match your interests.
+            </p>
+
+            <label htmlFor="student-name">Full Name</label>
+            <input
+              id="student-name"
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <label htmlFor="student-major">Major</label>
+            <select
+              id="student-major"
+              value={major}
+              onChange={(e) => setMajor(e.target.value)}
+            >
+              <option value="">Select your major</option>
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Cybersecurity</option>
+              <option>Business</option>
+              <option>Engineering</option>
+              <option>Biology</option>
+              <option>Other</option>
+            </select>
+
+            <label htmlFor="academic-year">Academic Year</label>
+            <select
+              id="academic-year"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+            >
+              <option value="">Select academic year</option>
+              <option>Freshman</option>
+              <option>Sophomore</option>
+              <option>Junior</option>
+              <option>Senior</option>
+              <option>Graduate Student</option>
+            </select>
+
+            <label htmlFor="student-interests">Interests</label>
+            <input
+              id="student-interests"
+              type="text"
+              placeholder="Software Development, Cybersecurity"
+              value={interests}
+              onChange={(e) => setInterests(e.target.value)}
+            />
+
+            <label htmlFor="student-skills">Skills</label>
+            <input
+              id="student-skills"
+              type="text"
+              placeholder="Python, Java, SQL"
+              value={skills}
+              onChange={(e) => setSkills(e.target.value)}
+            />
+
+            <label htmlFor="career-goal">Career Goals</label>
+            <textarea
+              id="career-goal"
+              placeholder="Example: Become a Software Engineer"
+              value={careerGoal}
+              onChange={(e) => setCareerGoal(e.target.value)}
+              rows="3"
+            />
+
+            <div className="profile-buttons">
+              <button type="submit" className="save-button">
+                {savedProfile ? "Save Changes" : "Save Profile"}
+              </button>
+
+              {savedProfile && (
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        ) : (
+          <section className="profile-card">
+            <h2>My Student Profile</h2>
+            <p className="profile-subtitle">
+              Your saved academic information and preferences.
+            </p>
+
+            <div className="profile-info">
+              <p><strong>Full Name:</strong> {savedProfile.name}</p>
+              <p><strong>Major:</strong> {savedProfile.major}</p>
+              <p><strong>Academic Year:</strong> {savedProfile.year}</p>
+              <p><strong>Interests:</strong> {savedProfile.interests || "Not provided"}</p>
+              <p><strong>Skills:</strong> {savedProfile.skills || "Not provided"}</p>
+              <p><strong>Career Goals:</strong> {savedProfile.careerGoal || "Not provided"}</p>
+            </div>
+
+            <button className="save-button" onClick={handleEdit}>
+              Edit Profile
+            </button>
+
+            <div className="recommendation-note">
+              <h3>Personalization Ready</h3>
+              <p>
+                Your profile information can be used to provide
+                personalized opportunity recommendations.
+              </p>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
+  );
 }
+
+export default StudentProfile;
