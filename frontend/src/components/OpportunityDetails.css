@@ -1,0 +1,101 @@
+body:has(.page) {
+  display: block;
+  margin: 0;
+}
+
+#root:has(.page) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: #f1f1f1;
+  color: #253b34;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+.page .header {
+  background: #005a3c;
+  color: white;
+  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.page .container {
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.page .back-button {
+  background: none;
+  border: none;
+  color: #555;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.page .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page .title-row h1 {
+  margin: 0;
+  font-weight: 300;
+  color: #173f30;
+}
+
+.page .title-row span {
+  color: #b8860b;
+  font-size: 12px;
+}
+
+.page .card-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.page .main-card,
+.page .side-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  color: #253b34;
+  text-align: left;
+}
+
+.page .side-card button {
+  width: 100%;
+  background: #006b45;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 12px 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page .tags {
+  color: teal;
+}
+
+@media (max-width: 700px) {
+  .page .card-layout {
+    grid-template-columns: 1fr;
+  }
+}

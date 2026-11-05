@@ -1,0 +1,41 @@
+export const student = {
+  firstName: "Alex",
+  fullName: "Alex Morgan",
+  major: "Computer Science",
+  year: "Junior",
+  skills: ["Python", "Java", "SQL"],
+  interests: ["Software Engineering", "AI"],
+};
+
+export const recommendations = [
+  {
+    id: "software-engineering-intern",
+    title: "Software Engineering Intern",
+    category: "Internships",
+    fit: "Strong fit",
+    fitReason: "Computer Science + Python",
+    organization: "Cedarline Systems",
+    location: "Arlington, VA · Hybrid",
+    timing: "Summer 2027",
+    major: "Computer Science",
+    skills: ["Python", "Java", "SQL"],
+    deadline: "Sample deadline",
+    description: "Work with a team to build and test software features for a web application.",
+    requirements: ["Computer Science or related major", "Experience with Python or Java", "Interest in software development"],
+  },
+  {
+    id: "ai-engineering-intern",
+    title: "AI Engineering Intern",
+    category: "Internships",
+    fit: "Skill gap to explore",
+    fitReason: "PyTorch",
+    organization: "Northstar Labs",
+    location: "Fairfax, VA · Part-time",
+    timing: "Spring 2027",
+    major: "Computer Science",
+    skills: ["Python", "PyTorch"],
+    deadline: "Sample deadline",
+    description: "Explore machine learning tools and help test prototype AI features.",
+    requirements: ["Programming fundamentals", "Python familiarity", "Interest in learning PyTorch"],
+  },
+];

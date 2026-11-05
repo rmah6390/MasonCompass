@@ -1,0 +1,45 @@
+.taj-discovery { max-width: 1160px; margin: 0 auto; padding: 44px 36px 70px; color: #173c2a; }
+.taj-discovery__breadcrumb { color: #568168; font-size: 11px; font-weight: 750; letter-spacing: .12em; }
+.taj-discovery__breadcrumb span { padding: 0 6px; color: #a7bdb0; }
+.taj-discovery__heading { display:flex; align-items:center; justify-content:space-between; gap: 15px; margin: 13px 0 25px; }
+.taj-discovery__heading h1 { font-size: clamp(26px, 3.3vw, 38px); letter-spacing: -.8px; margin: 0 0 7px; }
+.taj-discovery__heading p { font-size: 14px; color: #6a7e70; margin: 0; }
+.taj-discovery__prototype { padding: 8px 12px; border-radius: 5px; font-size: 10px; font-weight: 750; color: #427454; background: #e4f0e3; white-space: nowrap; }
+.taj-filters { background:white; border: 1px solid #dee8dc; padding: 0 22px 23px; border-radius: 8px; }
+.taj-filters__tabs { display:flex; gap:26px; border-bottom: 1px solid #dfe8df; margin-bottom: 19px; flex-wrap:wrap; }
+.taj-filters__tab { background:transparent; border:0; border-bottom:3px solid transparent; color:#69806f; padding:16px 2px 12px; font-size:14px; font-weight:650; }
+.taj-filters__tab:hover { color: #0e5a37; }
+.taj-filters__tab--active { border-bottom-color:#0f5535; color:#114932; }
+.taj-filters__fields { display:grid; grid-template-columns: minmax(210px,1.5fr) repeat(2,minmax(130px,.75fr)) auto; gap:12px; align-items:end; }
+.taj-filters__field { display:flex; flex-direction:column; gap:8px; min-width:0; font-size:12px; font-weight:700; color:#477058; }
+.taj-filters__field input,.taj-filters__field select { width:100%; border:1px solid #cddcd0; border-radius:5px; padding:12px 11px; height:43px; color:#2b4333; background:white; font:inherit; font-weight:400; font-size:13px; }
+.taj-filters__field input::placeholder { color:#9cae9f; }
+.taj-filters__clear { padding:0 14px; border:1px solid #bcd5c5; height:43px; white-space:nowrap; background:#edf6ef; color:#1e6240; font-size:12px!important; font-weight:650; border-radius:5px; }
+.taj-filters__clear:hover { background:#dff0e2; }
+.taj-discovery__results { padding-top:28px; }
+.taj-discovery__results-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:16px; }
+.taj-discovery__results-header h2 { margin:0 0 4px; color:#17452f; font-size:20px; letter-spacing:-.3px; }
+.taj-discovery__results-header p { margin:0; font-size:12px; color:#6e8073; }
+.taj-discovery__count { background:#ebf2e8; color:#567b5a; padding:7px 10px; border-radius:5px; font-size:10px; font-weight:750; }
+.taj-discovery__grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.taj-card { min-width:0; display:flex; flex-direction:column; gap:10px; padding:21px 22px 18px; border:1px solid #dfe8df; border-radius:7px; background:#fff; }
+.taj-card__top { display:flex; justify-content:space-between; align-items:center; }
+.taj-card__badge { background:#e6f3e8; color:#236843; font-size:11px; border-radius:4px; padding:5px 9px; font-weight:700; }
+.taj-card__bookmark { width:33px; height:33px; display:inline-flex; justify-content:center; align-items:center; border:1px solid #dce7dd; background:white; border-radius:5px; font-size:22px!important; color:#557e64; line-height:1; padding:0; }
+.taj-card__bookmark:hover, .taj-card__bookmark--saved { background:#e6f3e9; color:#11653c; }
+.taj-card h2 { font-size:18px; letter-spacing:-.4px; line-height:1.25; margin:0; color:#193e2b; }
+.taj-card__organization { color:#788578; font-size:12px; margin:0; }
+.taj-card__description { color:#496351; font-size:13px; line-height:1.55; margin:0; flex:1; }
+.taj-card__meta { display:flex; gap:8px; flex-wrap:wrap; }
+.taj-card__meta span { font-size:11px; color:#4a7757; background:#eff5ed; border-radius:3px; padding:5px 7px; }
+.taj-card__footer { border-top:1px solid #e8efe8; padding-top:13px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.taj-card__footer > span { color:#738779; font-size:11px; }
+.taj-card__details { color:white; background:#0f4b32; border:1px solid #0f4b32; border-radius:4px; padding:9px 13px; font-size:12px!important; font-weight:650; }
+.taj-card__details:hover { background:#216c49; }
+.taj-discovery__empty { background:#fff; border:1px solid #dee8dc; padding:35px; text-align:center; border-radius:7px; }
+.taj-discovery__empty h3 { margin:0 0 5px; font-size:17px; }
+.taj-discovery__empty p { font-size:13px; color:#6d806f; }
+.taj-discovery__empty button { border:1px solid #0f4b32; border-radius:4px; background:#0f4b32; color:#fff; padding:10px 14px; }
+.taj-discovery__footnote { font-size:11px; margin-top:23px; color:#87988b; line-height:1.5; }
+@media (max-width: 900px) { .taj-filters__fields { grid-template-columns:repeat(2,minmax(0,1fr)); } .taj-filters__clear { justify-self:start; } }
+@media (max-width: 700px) { .taj-discovery {padding:29px 17px 55px;} .taj-discovery__heading {align-items:start; flex-direction:column;} .taj-filters {padding:0 14px 18px;} .taj-filters__tabs {gap:16px;} .taj-filters__fields {grid-template-columns: 1fr;} .taj-filters__clear {width:100%;} .taj-discovery__grid {grid-template-columns:1fr;} }
