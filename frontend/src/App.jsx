@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
 import OpportunityDetails from "./components/OpportunityDetails";
 import PersonalizedRecommendations from "./components/PersonalizedRecommendations";
 import TajOpportunityDiscovery from "./components/TajOpportunityDiscovery";
 import StudentProfile from "./components/StudentProfile";
-import { student, recommendations } from "./components/opportunities";
+import { recommendations } from "./components/opportunities";
 import { tajAdaptedOpportunities } from "./components/tajOpportunities";
 import "./App.css";
+import { getProfile, getRecommendations } from "./api";
 
 // Integration only details view: original teammatesfiles dont change
 function SelectedOpportunityDetails({ opportunity, returnTo }) {
@@ -105,6 +106,23 @@ function AppPages() {
   const [detailsReturnPath, setDetailsReturnPath] = useState("/discover");
   const [savedIds, setSavedIds] = useState([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [recommendationData, setRecommendationData] = useState(null);
+  const [recommendationStatus, setRecommendationStatus] = useState("loading");
+
+  useEffect(() => {
+    if (location.pathname !== "/recommendations") return;
+    let active = true;
+    setRecommendationStatus("loading");
+    Promise.all([getProfile(), getRecommendations()])
+      .then(([profile, opportunities]) => {
+        if (!active) return;
+        setRecommendationData({ profile, opportunities });
+        setRecommendationStatus("ready");
+      })
+      .catch(() => { if (active) setRecommendationStatus("error"); });
+    return () => { active = false; };
+  }, [location.pathname]);
+
 
   function toggleSave(opportunity) {
     setSavedIds((previous) => previous.includes(opportunity.id)
@@ -119,10 +137,12 @@ function AppPages() {
   }
 
   function RecommendationsPage() {
+    if (recommendationStatus === "loading") return <main className="mc-home"><p>Loading recommendations...</p></main>;
+    if (recommendationStatus === "error") return <main className="mc-home"><p role="alert">Cannot load recommendations. Start the API on port 8000 and refresh.</p><button onClick={() => navigate("/")}>Home</button></main>;
     return (
       <PersonalizedRecommendations
-        student={student}
-        opportunities={recommendations}
+        student={recommendationData.profile}
+        opportunities={recommendationData.opportunities}
         savedIds={savedIds}
         onToggleSave={toggleSave}
         onSelectOpportunity={openOpportunity}

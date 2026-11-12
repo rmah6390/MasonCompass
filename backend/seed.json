@@ -1,0 +1,144 @@
+{
+  "student": {
+    "firstName": "Alex",
+    "fullName": "Alex Morgan",
+    "major": "Computer Science",
+    "year": "Junior",
+    "skills": [
+      "Python",
+      "Java",
+      "SQL"
+    ],
+    "interests": [
+      "Software Engineering",
+      "AI"
+    ]
+  },
+  "opportunities": [
+    {
+      "id": "software-engineering-intern",
+      "title": "Software Engineering Intern",
+      "category": "Internships",
+      "fit": "Strong fit",
+      "fitReason": "Computer Science + Python",
+      "organization": "Cedarline Systems",
+      "location": "Arlington, VA \u00b7 Hybrid",
+      "timing": "Summer 2027",
+      "major": "Computer Science",
+      "skills": [
+        "Python",
+        "Java",
+        "SQL"
+      ],
+      "deadline": "Sample deadline",
+      "description": "Work with a team to build and test software features for a web application.",
+      "requirements": [
+        "Computer Science or related major",
+        "Experience with Python or Java",
+        "Interest in software development"
+      ]
+    },
+    {
+      "id": "ai-engineering-intern",
+      "title": "AI Engineering Intern",
+      "category": "Internships",
+      "fit": "Skill gap to explore",
+      "fitReason": "PyTorch",
+      "organization": "Northstar Labs",
+      "location": "Fairfax, VA \u00b7 Part-time",
+      "timing": "Spring 2027",
+      "major": "Computer Science",
+      "skills": [
+        "Python",
+        "PyTorch"
+      ],
+      "deadline": "Sample deadline",
+      "description": "Explore machine learning tools and help test prototype AI features.",
+      "requirements": [
+        "Programming fundamentals",
+        "Python familiarity",
+        "Interest in learning PyTorch"
+      ]
+    },
+    {
+      "id": "taj-undergraduate-ai-research-assistant",
+      "title": "Undergraduate AI Research Assistant",
+      "category": "Research",
+      "major": "Computer Science",
+      "organization": "George Mason University",
+      "description": "Explore machine learning and artificial intelligence research.",
+      "deadline": "December 15, 2026",
+      "requirements": [
+        "Interest in Python, machine learning, and research."
+      ],
+      "location": "Fairfax, VA",
+      "timing": "See opportunity",
+      "skills": [
+        "Computer Science"
+      ],
+      "fit": "Explore opportunity",
+      "fitReason": "Listed for Computer Science students",
+      "level": "Undergraduate"
+    },
+    {
+      "id": "taj-software-engineering-internship",
+      "title": "Software Engineering Internship",
+      "category": "Internships",
+      "major": "Computer Science",
+      "organization": "Technology Company",
+      "description": "Gain hands-on experience developing web applications.",
+      "deadline": "January 10, 2027",
+      "requirements": [
+        "Basic JavaScript and programming knowledge."
+      ],
+      "location": "Not specified",
+      "timing": "See opportunity",
+      "skills": [
+        "Computer Science"
+      ],
+      "fit": "Explore opportunity",
+      "fitReason": "Listed for Computer Science students",
+      "level": "Undergraduate"
+    },
+    {
+      "id": "taj-engineering-research-program",
+      "title": "Engineering Research Program",
+      "category": "Research",
+      "major": "Engineering",
+      "organization": "George Mason University",
+      "description": "Participate in engineering research projects.",
+      "deadline": "December 20, 2026",
+      "requirements": [
+        "Engineering major or related experience."
+      ],
+      "location": "Fairfax, VA",
+      "timing": "See opportunity",
+      "skills": [
+        "Engineering"
+      ],
+      "fit": "Explore opportunity",
+      "fitReason": "Listed for Engineering students",
+      "level": "Undergraduate"
+    },
+    {
+      "id": "taj-student-academic-scholarship",
+      "title": "Student Academic Scholarship",
+      "category": "Scholarships",
+      "major": "Business",
+      "organization": "GMU Student Resources",
+      "description": "Scholarship opportunity for undergraduate students.",
+      "deadline": "February 1, 2027",
+      "requirements": [
+        "Undergraduate student in good academic standing."
+      ],
+      "location": "Fairfax, VA",
+      "timing": "See opportunity",
+      "skills": [
+        "Business"
+      ],
+      "fit": "Explore opportunity",
+      "fitReason": "Listed for Business students",
+      "level": "Undergraduate"
+    }
+  ]
+}

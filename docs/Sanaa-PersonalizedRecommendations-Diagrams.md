@@ -1,0 +1,158 @@
+# MasonCompass | Personalized Recommendations
+
+**CS 321 – Deliverable 04**  
+**Author:** Sanaa Karkera  
+**Feature:** Personalized Recommendations
+
+---
+
+## 1. Conceptual Class Diagram
+
+```mermaid
+classDiagram
+    direction LR
+    class StudentProfile {
+        major
+        skills
+        interests
+    }
+    class Recommendation {
+        score
+        fit
+        fitReason
+    }
+    class Opportunity {
+        title
+        category
+        major
+        skills
+    }
+    StudentProfile "1" --> "0..*" Recommendation : receives
+    Recommendation "0..*" --> "1" Opportunity : refers to
+    style StudentProfile fill:#006633,stroke:#FFCC33,color:#FFFFFF,stroke-width:2px
+    style Recommendation fill:#FFCC33,stroke:#006633,color:#172B20,stroke-width:2px
+    style Opportunity fill:#1D4ED8,stroke:#93C5FD,color:#FFFFFF,stroke-width:2px
+```
+
+---
+
+## 2. Detailed Class Diagram
+
+```mermaid
+classDiagram
+    direction TB
+    class RecommendationService {
+        +profiles: ProfileRepository
+        +opportunities: OpportunityRepository
+        +recommend(student_id: str) list or None
+    }
+    class ProfileRepository {
+        +session: Session
+        +get(student_id: str) dict or None
+    }
+    class OpportunityRepository {
+        +session: Session
+        +list_all() list
+    }
+    class StudentProfile {
+        +id: str
+        +data: dict
+    }
+    class Opportunity {
+        +id: str
+        +data: dict
+    }
+    RecommendationService --> ProfileRepository : reads profile
+    RecommendationService --> OpportunityRepository : reads opportunities
+    ProfileRepository --> StudentProfile : retrieves
+    OpportunityRepository --> Opportunity : retrieves
+    style RecommendationService fill:#006633,stroke:#FFCC33,color:#FFFFFF,stroke-width:2px
+    style ProfileRepository fill:#1D4ED8,stroke:#93C5FD,color:#FFFFFF,stroke-width:2px
+    style OpportunityRepository fill:#1D4ED8,stroke:#93C5FD,color:#FFFFFF,stroke-width:2px
+    style StudentProfile fill:#FFCC33,stroke:#006633,color:#172B20,stroke-width:2px
+    style Opportunity fill:#FFCC33,stroke:#006633,color:#172B20,stroke-width:2px
+```
+
+---
+
+## 3. Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    %% Participant colors follow the preview theme for readable light/dark rendering.
+    actor Student
+    participant UI as React AppPages
+    participant API as FastAPI
+    participant S as RecommendationService
+    participant P as ProfileRepository
+    participant O as OpportunityRepository
+    participant DB as Database
+
+    Student->>UI: Open Recommendations
+    par Load student profile
+        UI->>API: GET /api/profile
+        API->>P: get(demo-student)
+        P->>DB: Read profile record
+        DB-->>P: StudentProfile
+        P-->>API: Profile data
+        API-->>UI: Profile JSON
+    and Generate recommendations
+        UI->>API: GET /api/recommendations
+        API->>S: recommend(demo-student)
+        S->>P: get(demo-student)
+        P->>DB: Read profile record
+        DB-->>P: StudentProfile
+        P-->>S: Profile data
+        S->>O: list_all()
+        O->>DB: Read opportunity records
+        DB-->>O: Opportunities
+        O-->>S: Opportunity data
+        S->>S: Match, score and sort
+        S-->>API: Ranked opportunities
+        API-->>UI: Recommendations JSON
+    end
+    UI-->>Student: Render personalized cards
+```
+
+---
+
+## 4. Layered Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph UI["1 · User Interface Layer"]
+        direction LR
+        A["AppPages<br/>App.jsx"] --> B["PersonalizedRecommendations<br/>React component"]
+        A --> C["API client<br/>api.js"]
+    end
+
+    subgraph APP["2 · Application Layer"]
+        direction LR
+        D["FastAPI endpoints<br/>main.py"] --> E["RecommendationService<br/>services.py"]
+    end
+
+    subgraph DATA["3 · Persistence Layer"]
+        direction LR
+        F["ProfileRepository<br/>repositories.py"]
+        G["OpportunityRepository<br/>repositories.py"]
+        H[("SQLAlchemy database<br/>database.py")]
+        F --> H
+        G --> H
+    end
+
+    C -->|HTTP / JSON| D
+    D -->|Profile endpoint| F
+    E -->|Get student| F
+    E -->|Get opportunities| G
+
+    classDef ui fill:#006633,stroke:#FFCC33,color:#FFFFFF,stroke-width:2px
+    classDef app fill:#FFCC33,stroke:#006633,color:#172B20,stroke-width:2px
+    classDef data fill:#1D4ED8,stroke:#93C5FD,color:#FFFFFF,stroke-width:2px
+    class A,B,C ui
+    class D,E app
+    class F,G,H data
+    style UI fill:#E8F5E9,stroke:#006633,stroke-width:2px,color:#006633
+    style APP fill:#FFF8DB,stroke:#E5B82E,stroke-width:2px,color:#172B20
+    style DATA fill:#E8F0FE,stroke:#1D4ED8,stroke-width:2px,color:#1D4ED8
+```

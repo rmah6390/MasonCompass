@@ -122,7 +122,7 @@ export default function PersonalizedRecommendations({
 
         {!isOriginal && <div className="mc-rec__results-title"><span className="mc-rec__results-mark" aria-hidden="true">✦</span> RECOMMENDED FOR YOU <span className="mc-rec__results-count">{visibleOpportunities.length} opportunities</span></div>}
         <section className="mc-rec__cards" aria-label="Your personalized recommendations">
-          {visibleOpportunities.length === 0 && <div className="mc-rec__empty">No recommendations match “{query}”. Try another search.</div>}
+          {visibleOpportunities.length === 0 && <div className="mc-rec__empty">{query ? `No recommendations match “${query}”. Try another search.` : "No matching opportunities were found for this profile."}</div>}
           {visibleOpportunities.map((item) => (
             isOriginal ? (
               <button type="button" key={item.id} className="mc-rec__original-card" onClick={() => onSelectOpportunity(item)} aria-label={`View details for ${item.title}`}>
@@ -149,7 +149,7 @@ export default function PersonalizedRecommendations({
             {CATEGORY_OPTIONS.map((category, index) => <button type="button" key={category} className={`mc-rec__category-button ${index === 0 ? "mc-rec__category-button--primary" : ""}`} onClick={() => onSelectCategory(category)}>{category} <ArrowIcon direction="down" /></button>)}
           </div>
         ) : (
-          <p className="mc-rec__disclaimer">Recommendations are based on sample profile information for this prototype. Always review eligibility and deadlines on the original listing.</p>
+          <p className="mc-rec__disclaimer">Recommendations are ranked using a stored demo profile and sample opportunities. Always review eligibility and deadlines on the original listing.</p>
         )}
       </main>
     </div>
