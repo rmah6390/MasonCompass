@@ -92,4 +92,3 @@ All six tests passed locally: five profile tests and one recommendation test.
 - [Student Profile](../docs/Ridha-StudentProfile-Diagrams.md)
 - [Personalized Recommendations](../docs/Sanaa-PersonalizedRecommendations-Diagrams.md)
 
-Do not modify any other file or window.
