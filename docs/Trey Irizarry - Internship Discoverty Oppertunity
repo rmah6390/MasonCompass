@@ -5,29 +5,30 @@
 **Feature:** Internship Discovery Oppertunity
 
 ---
-ss Diagram
+## 1. Conceptual Class Diagram
 
 ```mermaid
 classDiagram
+    direction LR
+    class StudentProfile {
+        major
+        skills
+        interests
+    }
+    class Recommendation {
+        score
+        fit
+        fitReason
+    }
     class Opportunity {
-        +int id
-        +String title
-        +String category
-        +String organization
-        +String description
-        +String requirements
-        +String deadline
-        +String location
-        +String major
-        +String official_url
+        title
+        category
+        major
+        skills
     }
-
-    class Student {
-        +int id
-        +String name
-        +String major
-    }
-
-    Student "1" --> "*" Opportunity : views
+    StudentProfile "1" --> "0..*" Recommendation : receives
+    Recommendation "0..*" --> "1" Opportunity : refers to
+    style StudentProfile fill:#006633,stroke:#FFCC33,color:#FFFFFF,stroke-width:2px
+    style Recommendation fill:#FFCC33,stroke:#006633,color:#172B20,stroke-width:2px
+    style Opportunity fill:#1D4ED8,stroke:#93C5FD,color:#FFFFFF,stroke-width:2px
 ```
----
