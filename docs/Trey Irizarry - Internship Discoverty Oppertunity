@@ -5,7 +5,10 @@
 **Feature:** Internship Discovery Oppertunity
 
 ---
-
+```mermaid
+flowchart TD
+    A[Start] -->B[End]
+```
 ## 1. Conceptual Class Diagram
 
 ```mermaid
