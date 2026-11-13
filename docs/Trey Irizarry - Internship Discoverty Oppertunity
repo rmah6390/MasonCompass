@@ -53,4 +53,5 @@ classDiagram
     OpportunityServiceBackend --> OpportunityRepository
     OpportunityRepository --> Opportunity
 ```
+--
 
