@@ -7,3 +7,28 @@
 ---
 
 ## 1. Conceptual Class Diagram
+
+```mermaid
+classDiagram
+    class Opportunity {
+        +int id
+        +String title
+        +String category
+        +String organization
+        +String description
+        +String requirements
+        +String deadline
+        +String location
+        +String major
+        +String official_url
+    }
+
+    class Student {
+        +int id
+        +String name
+        +String major
+    }
+
+    Student "1" --> "*" Opportunity : views
+```
+---
