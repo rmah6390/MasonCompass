@@ -1,5 +1,6 @@
 import unittest
-from services import RecommendationService, ProfileService
+from fastapi import HTTPException
+from services import RecommendationService, ProfileService, OpportunityService
 
 class Profiles:
     def get(self, student_id):
@@ -85,6 +86,40 @@ class ProfileTests(unittest.TestCase):
         updated = dict(self.profile, major="Business", skills=["Accounting"], interests=[])
         self.service.save_profile("demo", updated)
         self.assertEqual([item["id"] for item in recommendations.recommend("demo")], ["c"])
+
+
+class DetailOpportunities:
+    def get(self, opportunity_id):
+        if opportunity_id == "a":
+            return {
+                "id": "a",
+                "title": "Python internship",
+                "requirements": ["Python"]
+            }
+        return None
+
+
+class OpportunityDetailsTests(unittest.TestCase):
+    def setUp(self):
+        self.service = OpportunityService(DetailOpportunities())
+
+    def test_get_details(self):
+        result = self.service.get_details("a")
+        self.assertEqual(result["title"], "Python internship")
+        self.assertEqual(result["requirements"], ["Python"])
+        self.assertIsNone(result["official_url"])
+        self.assertTrue(result["is_sample"])
+
+    def test_missing_opportunity(self):
+        with self.assertRaises(HTTPException) as error:
+            self.service.get_details("invalid-id")
+        self.assertEqual(error.exception.status_code, 404)
+
+    def test_empty_id(self):
+        with self.assertRaises(HTTPException) as error:
+            self.service.get_details(" ")
+        self.assertEqual(error.exception.status_code, 400)
+
 
 if __name__ == "__main__":
     unittest.main()

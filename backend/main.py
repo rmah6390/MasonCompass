@@ -5,7 +5,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine, SessionLocal, StudentProfile, Opportunity
 from repositories import ProfileRepository, OpportunityRepository
-from services import RecommendationService, ProfileService
+from services import RecommendationService, ProfileService, OpportunityService
 
 DEMO_STUDENT_ID = "demo-student"
 
@@ -55,3 +55,8 @@ def recommendations(session=Depends(get_session)):
     if result is None:
         raise HTTPException(404, "Student profile not found")
     return result
+
+@app.get("/api/opportunities/{opportunity_id}")
+def get_opportunity_details(opportunity_id: str, session=Depends(get_session)):
+    service = OpportunityService(OpportunityRepository(session))
+    return service.get_details(opportunity_id)

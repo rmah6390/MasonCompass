@@ -9,49 +9,6 @@ import { tajAdaptedOpportunities } from "./components/tajOpportunities";
 import "./App.css";
 import { getProfile, getRecommendations } from "./api";
 
-// Integration only details view: original teammatesfiles dont change
-function SelectedOpportunityDetails({ opportunity, returnTo }) {
-  const navigate = useNavigate();
-  const requirements = Array.isArray(opportunity.requirements)
-    ? opportunity.requirements
-    : opportunity.requirements ? [opportunity.requirements] : [];
-
-  return (
-    <div className="page">
-      <div className="container">
-        <button type="button" className="back-button" onClick={() => navigate(returnTo || "/discover")}>
-          ← Back to opportunities / results
-        </button>
-        <div className="title-row">
-          <h1>{opportunity.title}</h1>
-          <span>SAMPLE OPPORTUNITY</span>
-        </div>
-        <div className="card-layout">
-          <div className="main-card">
-            <h3>About this opportunity</h3>
-            <p>{opportunity.description || "No description provided for this sample opportunity."}</p>
-            <p className="tags">{opportunity.category}{opportunity.major ? ` · ${opportunity.major}` : ""}</p>
-            <h3>Requirements</h3>
-            {requirements.length > 0 ? (
-              <ul>{requirements.map((requirement, index) => <li key={index}>{requirement}</li>)}</ul>
-            ) : <p>Requirements are not specified in this sample.</p>}
-          </div>
-          <div className="side-card">
-            <h3>At a glance</h3>
-            <p>Organization: {opportunity.organization || "Not specified"}</p>
-            <p>Location: {opportunity.location || "Not specified"}</p>
-            <p>Deadline: {opportunity.deadline || "Not specified"}</p>
-            <button type="button" disabled title="No verified application link is available for this sample opportunity">
-              Official Posting Unavailable (Sample)
-            </button>
-            <small>This is a sample listing. Verify details through an official source before applying.</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 const allOpportunities = [...recommendations, ...tajAdaptedOpportunities];
 const categoryNames = {
   internships: "Internships",
@@ -231,9 +188,7 @@ function AppPages() {
         <Route path="/discover/:category" element={<DiscoveryPage />} />
         <Route
           path="/details"
-          element={selectedOpportunity
-            ? <SelectedOpportunityDetails opportunity={selectedOpportunity} returnTo={detailsReturnPath} />
-            : <OpportunityDetails />}
+          element={<OpportunityDetails opportunity={selectedOpportunity} returnTo={detailsReturnPath} />}
         />
       </Routes>
     </>

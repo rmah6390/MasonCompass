@@ -25,3 +25,7 @@ class OpportunityRepository:
 
     def list_all(self):
         return [row.data for row in self.session.scalars(select(Opportunity)).all()]
+
+    def get(self, opportunity_id):
+        row = self.session.get(Opportunity, opportunity_id)
+        return row.data if row else None

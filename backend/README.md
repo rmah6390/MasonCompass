@@ -1,6 +1,6 @@
 # MasonCompass Backend (Deliverable 4)
 
-The Student Profile and Personalized Recommendations features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. The discovery and saved pages still use the Sprint 1 implementation.
+The Student Profile, Personalized Recommendations, and Opportunity Details features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. Opportunity Details retrieves the selected opportunity from the database. The discovery and saved pages still use the Sprint 1 implementation.
 
 ## Requirements
 
@@ -40,9 +40,15 @@ npm ci
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities.
+Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities. Click View Details to see the selected opportunity.
 
 API documentation: http://localhost:8000/docs
+
+Opportunity Details endpoint: GET /api/opportunities/{opportunity_id}
+
+Example: http://localhost:8000/api/opportunities/software-engineering-intern
+
+An unknown opportunity ID returns 404 Not Found. Sample opportunities may not have an official posting link.
 
 ## Database
 
@@ -80,15 +86,15 @@ Windows:
 .\.venv\Scripts\python.exe -m unittest test_services -v
 ```
 
-All six tests passed locally: five profile tests and one recommendation test.
+All nine tests passed locally: five profile tests, one recommendation test, and three opportunity details tests. The new tests check valid, missing, and empty opportunity IDs.
 
 ## Business Logic
 
 - ProfileService checks and saves student information through ProfileRepository.
 - RecommendationService ranks opportunities by major (40 points), matched skills (up to 30 points), and matching interests (10 points each). Zero-score items are omitted. These scores show relevance, not verified eligibility.
+- OpportunityService retrieves opportunity details through OpportunityRepository and checks for missing or invalid IDs.
 
 ## Design Diagrams
 
 - [Student Profile](../docs/Ridha-StudentProfile-Diagrams.md)
 - [Personalized Recommendations](../docs/Sanaa-PersonalizedRecommendations-Diagrams.md)
-

@@ -1,4 +1,5 @@
 import re
+from fastapi import HTTPException
 
 def normalize(value):
     return str(value or "").strip().casefold()
@@ -86,3 +87,24 @@ class RecommendationService:
                             "fit": "Strong fit" if strong else "Skill gap to explore",
                             "fitReason": " · ".join(reasons)})
         return sorted(results, key=lambda item: (-item["score"], item["title"]))
+
+
+class OpportunityService:
+    def __init__(self, repository):
+        self.repository = repository
+
+    def get_details(self, opportunity_id):
+        opportunity_id = opportunity_id.strip()
+        if not opportunity_id:
+            raise HTTPException(status_code=400, detail="Opportunity ID is required.")
+
+        opportunity = self.repository.get(opportunity_id)
+        if opportunity is None:
+            raise HTTPException(status_code=404, detail="Opportunity not found.")
+
+        return {
+            **opportunity,
+            "requirements": opportunity.get("requirements") or [],
+            "official_url": opportunity.get("official_url") or opportunity.get("officialUrl"),
+            "is_sample": opportunity.get("is_sample", opportunity.get("isSample", True)),
+        }
