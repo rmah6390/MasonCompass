@@ -147,4 +147,4 @@ Recommendations use the saved profile when the student opens the Recommendations
 - All six unit tests passed, including five profile tests and one recommendation test.
 - The profile saved successfully, and recommendations changed after editing it.
 - The current MVP uses one demo student.
-- Peer approval: Pending.
+- Peer approval: Approved by Sanaa Karkera on November 12, 2026 ([GitHub Issue #10](https://github.com/rmah6390/MasonCompass/issues/10)).
