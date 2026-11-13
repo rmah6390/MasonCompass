@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import OpportunityFilters from "./OpportunityFilters.jsx";
 import OpportunityCard from "./OpportunityCard.jsx";
-import { filterOpportunities } from "./filterOpportunities.js";
 import "./TajOpportunityDiscovery.css";
 
 const initialFilters = (category) => ({ category, search: "", major: "All", location: "All" });
@@ -21,8 +20,48 @@ export default function TajOpportunityDiscovery({
   const [filters, setFilters] = useState(() => initialFilters(category));
   useEffect(() => setFilters((previous) => ({ ...previous, category })), [category]);
 
-  const filteredOpportunities = useMemo(() => filterOpportunities(opportunities, category, filters),
-    [opportunities, category, filters]);
+  const [filteredOpportunities, setFilteredOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    const params = new URLSearchParams({
+      keyword: filters.search,
+      category,
+      major: filters.major,
+      location: filters.location,
+    });
+
+    async function loadOpportunities() {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(`${apiUrl.replace(/\/$/, "")}/api/opportunities?${params}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("Unable to load opportunities.");
+        const data = await response.json();
+        if (!controller.signal.aborted) {
+          setFilteredOpportunities(data.map((item) => ({
+            ...opportunities.find((existing) => existing.id === item.id),
+            ...item,
+          })));
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setError(err.message);
+          setFilteredOpportunities([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+
+    loadOpportunities();
+    return () => controller.abort();
+  }, [category, filters, opportunities]);
 
   const changeCategory = (nextCategory) => {
     if (nextCategory !== category) {
@@ -55,7 +94,11 @@ export default function TajOpportunityDiscovery({
           </div>
           <span className="taj-discovery__count">{filteredOpportunities.length} RESULTS</span>
         </div>
-        {filteredOpportunities.length > 0 ? (
+        {loading ? (
+          <p role="status">Loading opportunities...</p>
+        ) : error ? (
+          <p role="alert">{error}</p>
+        ) : filteredOpportunities.length > 0 ? (
           <div className="taj-discovery__grid">
             {filteredOpportunities.map((opportunity) => (
               <OpportunityCard
@@ -74,7 +117,7 @@ export default function TajOpportunityDiscovery({
             <button type="button" onClick={() => setFilters(initialFilters(category))}>Clear filters</button>
           </div>
         )}
-        <p className="taj-discovery__footnote">These listings are fictional samples for Sprint 1. Always verify real requirements and deadlines before applying.</p>
+        <p className="taj-discovery__footnote">These listings are fictional samples for this project. Always verify real requirements and deadlines before applying.</p>
       </section>
     </main>
   );

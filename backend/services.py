@@ -108,3 +108,49 @@ class OpportunityService:
             "official_url": opportunity.get("official_url") or opportunity.get("officialUrl"),
             "is_sample": opportunity.get("is_sample", opportunity.get("isSample", True)),
         }
+
+
+# SearchFilterService for searching and filtering opportunities
+class SearchFilterService:
+    def __init__(self, repository):
+        self.repository = repository
+
+    def search(self, keyword="", category="", major="", location=""):
+        opportunities = self.repository.list_all()
+        results = []
+
+        category_aliases = {
+            "internships": "internship",
+            "scholarships": "scholarship",
+        }
+
+        for opportunity in opportunities:
+            title = normalize(opportunity.get("title"))
+            description = normalize(opportunity.get("description"))
+
+            if keyword:
+                search_text = normalize(keyword)
+                if search_text not in title and search_text not in description:
+                    continue
+
+            if category and normalize(category) not in ("all", "all categories"):
+                selected = normalize(category)
+                actual = normalize(opportunity.get("category"))
+
+                selected = category_aliases.get(selected, selected)
+                actual = category_aliases.get(actual, actual)
+
+                if selected != actual:
+                    continue
+
+            if major and normalize(major) not in ("all", "all majors"):
+                if normalize(major) != normalize(opportunity.get("major")):
+                    continue
+
+            if location and normalize(location) not in ("all", "any location"):
+                if normalize(location) not in normalize(opportunity.get("location")):
+                    continue
+
+            results.append(opportunity)
+
+        return results

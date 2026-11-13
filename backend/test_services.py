@@ -1,6 +1,6 @@
 import unittest
 from fastapi import HTTPException
-from services import RecommendationService, ProfileService, OpportunityService
+from services import RecommendationService, ProfileService, OpportunityService, SearchFilterService
 
 class Profiles:
     def get(self, student_id):
@@ -119,6 +119,89 @@ class OpportunityDetailsTests(unittest.TestCase):
         with self.assertRaises(HTTPException) as error:
             self.service.get_details(" ")
         self.assertEqual(error.exception.status_code, 400)
+
+
+# Sadia's eight tests and fake repository
+class FakeOpportunityRepository:
+    def list_all(self):
+        return [
+            {
+                "id": "1",
+                "title": "Software Developer Intern",
+                "description": "Build software applications",
+                "category": "Internship",
+                "major": "Computer Science",
+                "location": "Fairfax",
+            },
+            {
+                "id": "2",
+                "title": "Business Scholarship",
+                "description": "Financial support for students",
+                "category": "Scholarship",
+                "major": "Business",
+                "location": "Arlington",
+            },
+            {
+                "id": "3",
+                "title": "AI Research Assistant",
+                "description": "Work on machine learning research",
+                "category": "Research",
+                "major": "Computer Science",
+                "location": "Fairfax",
+            },
+        ]
+
+
+class TestSearchFilterService(unittest.TestCase):
+
+    def setUp(self):
+        self.service = SearchFilterService(
+            FakeOpportunityRepository()
+        )
+
+    def test_all_opportunities(self):
+        results = self.service.search()
+        self.assertEqual(len(results), 3)
+
+    def test_search_keyword(self):
+        results = self.service.search(keyword="software")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], "1")
+
+    def test_filter_category(self):
+        results = self.service.search(category="Scholarships")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], "2")
+
+    def test_filter_major(self):
+        results = self.service.search(major="Computer Science")
+        self.assertEqual(len(results), 2)
+
+    def test_filter_location(self):
+        results = self.service.search(location="Fairfax")
+        self.assertEqual(len(results), 2)
+
+    def test_combined_filters(self):
+        results = self.service.search(
+            category="Internships",
+            major="Computer Science",
+            location="Fairfax",
+        )
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], "1")
+
+    def test_no_results(self):
+        results = self.service.search(keyword="medicine")
+        self.assertEqual(len(results), 0)
+
+    def test_clear_filters(self):
+        results = self.service.search(
+            keyword="",
+            category="",
+            major="All",
+            location="All",
+        )
+        self.assertEqual(len(results), 3)
 
 
 if __name__ == "__main__":

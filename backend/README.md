@@ -1,6 +1,6 @@
 # MasonCompass Backend (Deliverable 4)
 
-The Student Profile, Personalized Recommendations, and Opportunity Details features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. Opportunity Details retrieves the selected opportunity from the database. The discovery and saved pages still use the Sprint 1 implementation.
+The Student Profile, Personalized Recommendations, Opportunity Details, and Opportunity Search and Filtering features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. Opportunity Details retrieves the selected opportunity from the database. The Discover page searches and filters database opportunities by keyword, category, major, and location. The Saved page still uses the Sprint 1 implementation.
 
 ## Requirements
 
@@ -40,9 +40,17 @@ npm ci
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities. Click View Details to see the selected opportunity.
+Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities. Click Discover to browse internships, research, or scholarships and search or filter by keyword, major, and location. Click Clear filters to reset the search. Click View Details to see the selected opportunity.
 
 API documentation: http://localhost:8000/docs
+
+Opportunity Search and Filtering endpoint: GET /api/opportunities
+
+Optional query parameters: keyword, category, major, location.
+
+Example: http://localhost:8000/api/opportunities?keyword=software&category=Internships&major=Computer%20Science&location=Arlington
+
+The endpoint returns matching opportunities or an empty list if no opportunities match.
 
 Opportunity Details endpoint: GET /api/opportunities/{opportunity_id}
 
@@ -86,13 +94,14 @@ Windows:
 .\.venv\Scripts\python.exe -m unittest test_services -v
 ```
 
-All nine tests passed locally: five profile tests, one recommendation test, and three opportunity details tests. The new tests check valid, missing, and empty opportunity IDs.
+All 17 unit tests passed locally: five profile tests, one recommendation test, three opportunity details tests, and eight search and filtering tests. The search tests cover listing all opportunities, keyword search, category, major, location, combined filters, no results, and clearing filters. The tests use fake repositories. Browser testing also confirmed a matching combined search, no-results handling, and navigation to Opportunity Details using the local application. The frontend production build passed.
 
 ## Business Logic
 
 - ProfileService checks and saves student information through ProfileRepository.
 - RecommendationService ranks opportunities by major (40 points), matched skills (up to 30 points), and matching interests (10 points each). Zero-score items are omitted. These scores show relevance, not verified eligibility.
 - OpportunityService retrieves opportunity details through OpportunityRepository and checks for missing or invalid IDs.
+- SearchFilterService (Sadia Mou) retrieves opportunities through OpportunityRepository and filters them by keyword, category, major, and location. The existing discovery interface sends filter selections to the backend and displays the matching results.
 
 ## Design Diagrams
 
