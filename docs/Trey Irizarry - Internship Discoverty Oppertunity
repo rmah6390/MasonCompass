@@ -8,22 +8,24 @@
 
 ## 1. Conceptual Class Diagram
 
-
 classDiagram
-    class Student {
-        studentProfile
-    }
-
     class Opportunity {
-        id
-        title
-        category
-        organization
-        description
-        requirements
-        deadline
-        location
-        major
+        +int id
+        +String title
+        +String category
+        +String organization
+        +String description
+        +String requirements
+        +String deadline
+        +String location
+        +String major
+        +String official_url
     }
 
-    Student --> Opportunity : views
+    class Student {
+        +int id
+        +String name
+        +String major
+    }
+
+    Student "1" --> "*" Opportunity : views
