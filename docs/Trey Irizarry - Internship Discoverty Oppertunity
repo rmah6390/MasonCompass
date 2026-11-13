@@ -6,8 +6,7 @@
 
 ---
 
-```mermaid 
-
+```mermaid
 classDiagram
     class Opportunity {
         +int id
@@ -29,6 +28,4 @@ classDiagram
     }
 
     Student "1" --> "*" Opportunity : views
-
-
 ```
