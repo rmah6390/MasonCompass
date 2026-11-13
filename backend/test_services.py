@@ -1,6 +1,6 @@
 import unittest
 from fastapi import HTTPException
-from services import RecommendationService, ProfileService, OpportunityService, SearchFilterService
+from services import RecommendationService, ProfileService, OpportunityService, SearchFilterService, SavedOpportunityService
 
 class Profiles:
     def get(self, student_id):
@@ -202,6 +202,89 @@ class TestSearchFilterService(unittest.TestCase):
             location="All",
         )
         self.assertEqual(len(results), 3)
+
+
+# Taj's Saved Opportunities tests
+class SavedTestOpportunityRepository:
+    def __init__(self):
+        self.items = {
+            "op-1": {"id": "op-1", "title": "Internship"},
+            "op-2": {"id": "op-2", "title": "Research"},
+        }
+
+    def get(self, opportunity_id):
+        return self.items.get(opportunity_id)
+
+
+class FakeSavedOpportunityRepository:
+    def __init__(self):
+        self.records = {}
+
+    def list_by_student(self, student_id):
+        return [record for (student, _), record in self.records.items() if student == student_id]
+
+    def get_by_student_and_opportunity(self, student_id, opportunity_id):
+        return self.records.get((student_id, opportunity_id))
+
+    def save(self, student_id, opportunity_id):
+        record = type("SavedRecord", (), {"student_id": student_id, "opportunity_id": opportunity_id})()
+        self.records[(student_id, opportunity_id)] = record
+        return record
+
+    def remove(self, student_id, opportunity_id):
+        return self.records.pop((student_id, opportunity_id), None) is not None
+
+
+class SavedOpportunityTests(unittest.TestCase):
+    def setUp(self):
+        self.saved = FakeSavedOpportunityRepository()
+        self.opportunities = SavedTestOpportunityRepository()
+        self.service = SavedOpportunityService(self.saved, self.opportunities)
+
+    def test_save_and_retrieve(self):
+        result = self.service.save_opportunity("student-a", "op-1")
+        self.assertIn("saved", result["message"].lower())
+        self.assertEqual([item["id"] for item in self.service.list_saved("student-a")], ["op-1"])
+
+    def test_duplicate_save_is_idempotent(self):
+        self.service.save_opportunity("student-a", "op-1")
+        response = self.service.save_opportunity("student-a", "op-1")
+        self.assertIn("already", response["message"].lower())
+        self.assertEqual(len(self.saved.records), 1)
+
+    def test_remove_saved_opportunity(self):
+        self.service.save_opportunity("student-a", "op-1")
+        response = self.service.remove_opportunity("student-a", "op-1")
+        self.assertEqual(response["opportunity_id"], "op-1")
+        self.assertEqual(self.service.list_saved("student-a"), [])
+
+    def test_missing_opportunity_returns_404(self):
+        with self.assertRaises(HTTPException) as raised:
+            self.service.save_opportunity("student-a", "unknown")
+        self.assertEqual(raised.exception.status_code, 404)
+
+    def test_removing_missing_bookmark_returns_404(self):
+        with self.assertRaises(HTTPException) as raised:
+            self.service.remove_opportunity("student-a", "op-1")
+        self.assertEqual(raised.exception.status_code, 404)
+
+    def test_students_are_isolated(self):
+        self.service.save_opportunity("student-a", "op-1")
+        self.assertEqual(self.service.list_saved("student-b"), [])
+        self.service.save_opportunity("student-b", "op-2")
+        self.assertEqual([item["id"] for item in self.service.list_saved("student-a")], ["op-1"])
+
+    def test_deleted_opportunities_are_skipped_when_listing(self):
+        self.service.save_opportunity("student-a", "op-1")
+        del self.opportunities.items["op-1"]
+        self.assertEqual(self.service.list_saved("student-a"), [])
+
+    def test_blank_identifiers_are_rejected(self):
+        for student, opportunity in [("", "op-1"), ("student-a", "")]:
+            with self.subTest(student=student, opportunity=opportunity):
+                with self.assertRaises(HTTPException) as raised:
+                    self.service.save_opportunity(student, opportunity)
+                self.assertEqual(raised.exception.status_code, 400)
 
 
 if __name__ == "__main__":

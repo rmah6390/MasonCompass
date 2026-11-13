@@ -1,6 +1,6 @@
 # MasonCompass Backend (Deliverable 4)
 
-The Student Profile, Personalized Recommendations, Opportunity Details, and Opportunity Search and Filtering features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. Opportunity Details retrieves the selected opportunity from the database. The Discover page searches and filters database opportunities by keyword, category, major, and location. The Saved page still uses the Sprint 1 implementation.
+The Student Profile, Personalized Recommendations, Opportunity Details, Opportunity Search and Filtering, and Saved Opportunities features are connected to the backend and database. Students can view, edit, and save their profile. Recommendations update based on the saved major, skills, and interests. Opportunity Details retrieves the selected opportunity from the database. The Discover page searches and filters database opportunities by keyword, category, major, and location. Students can bookmark opportunities, view their saved list, and remove bookmarks. Saved opportunities are stored in the database.
 
 ## Requirements
 
@@ -40,7 +40,7 @@ npm ci
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities. Click Discover to browse internships, research, or scholarships and search or filter by keyword, major, and location. Click Clear filters to reset the search. Click View Details to see the selected opportunity.
+Open the Vite URL shown in the terminal. Click Profile to view or edit the demo student. Click Recommendations to see matching opportunities. Click Discover to browse internships, research, or scholarships and search or filter by keyword, major, and location. Click Clear filters to reset the search. Click View Details to see the selected opportunity. Click the heart icon to bookmark an opportunity. Click Saved to view bookmarked opportunities, and click Remove Saved to remove a bookmark.
 
 API documentation: http://localhost:8000/docs
 
@@ -58,9 +58,17 @@ Example: http://localhost:8000/api/opportunities/software-engineering-intern
 
 An unknown opportunity ID returns 404 Not Found. Sample opportunities may not have an official posting link.
 
+Saved Opportunities endpoints:
+
+- GET /api/saved - Retrieve the demo student's saved opportunities.
+- POST /api/saved/{opportunity_id} - Save an existing opportunity without creating duplicates.
+- DELETE /api/saved/{opportunity_id} - Remove a saved opportunity.
+
+An unknown opportunity ID on save or missing bookmark on removal returns 404 Not Found.
+
 ## Database
 
-SQLite is the default local database. Tables and sample records are created on startup. Profile changes are saved in the database. Changing seed.json only affects a fresh database.
+SQLite is the default local database. Tables and sample records are created on startup. Profile changes and saved opportunities are stored in the database. Changing seed.json only affects a fresh database.
 
 PostgreSQL can also be configured through SQLAlchemy, but this integration was tested with SQLite. To configure PostgreSQL, create the masoncompass database and set DATABASE_URL before starting the backend.
 
@@ -94,7 +102,7 @@ Windows:
 .\.venv\Scripts\python.exe -m unittest test_services -v
 ```
 
-All 17 unit tests passed locally: five profile tests, one recommendation test, three opportunity details tests, and eight search and filtering tests. The search tests cover listing all opportunities, keyword search, category, major, location, combined filters, no results, and clearing filters. The tests use fake repositories. Browser testing also confirmed a matching combined search, no-results handling, and navigation to Opportunity Details using the local application. The frontend production build passed.
+All 25 unit tests passed locally: five profile tests, one recommendation test, three opportunity details tests, eight search and filtering tests, and eight saved opportunities tests. The search tests cover listing all opportunities, keyword search, category, major, location, combined filters, no results, and clearing filters. The saved opportunities tests cover saving and retrieving, duplicate prevention, removal, missing opportunities, missing bookmarks, student isolation, deleted opportunities, and blank identifiers. The tests use fake repositories. Local API testing with SQLite also confirmed saving, retrieving, duplicate prevention, and removal. Browser testing confirmed a matching combined search, no-results handling, navigation to Opportunity Details, and Saved Opportunities functionality. The frontend production build passed.
 
 ## Business Logic
 
@@ -102,8 +110,10 @@ All 17 unit tests passed locally: five profile tests, one recommendation test, t
 - RecommendationService ranks opportunities by major (40 points), matched skills (up to 30 points), and matching interests (10 points each). Zero-score items are omitted. These scores show relevance, not verified eligibility.
 - OpportunityService retrieves opportunity details through OpportunityRepository and checks for missing or invalid IDs.
 - SearchFilterService (Sadia Mou) retrieves opportunities through OpportunityRepository and filters them by keyword, category, major, and location. The existing discovery interface sends filter selections to the backend and displays the matching results.
+- SavedOpportunityService (Taj Dhaliwal) validates opportunity IDs, retrieves saved opportunity details, prevents duplicate bookmarks, and removes bookmarks through SavedOpportunityRepository. The frontend uses the saved opportunities API to keep bookmark state and the Saved page connected to the database.
 
 ## Design Diagrams
 
 - [Student Profile](../docs/Ridha-StudentProfile-Diagrams.md)
 - [Personalized Recommendations](../docs/Sanaa-PersonalizedRecommendations-Diagrams.md)
+- [Opportunity Search and Filtering](../docs/Sadia-SearchFilter-Diagrams.md)

@@ -4,8 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine, SessionLocal, StudentProfile, Opportunity
-from repositories import ProfileRepository, OpportunityRepository
-from services import RecommendationService, ProfileService, OpportunityService, SearchFilterService
+from repositories import ProfileRepository, OpportunityRepository, SavedOpportunityRepository
+from services import RecommendationService, ProfileService, OpportunityService, SearchFilterService, SavedOpportunityService
 
 DEMO_STUDENT_ID = "demo-student"
 
@@ -29,6 +29,15 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http
 def get_session():
     with SessionLocal() as session:
         yield session
+
+
+# Saved Opportunities business service constructor
+def get_saved_service(session):
+    """Construct the Saved Opportunities business service."""
+    return SavedOpportunityService(
+        SavedOpportunityRepository(session),
+        OpportunityRepository(session)
+    )
 
 @app.get("/api/health")
 def health():
@@ -67,3 +76,25 @@ def search_opportunities(keyword: str = "", category: str = "", major: str = "",
 def get_opportunity_details(opportunity_id: str, session=Depends(get_session)):
     service = OpportunityService(OpportunityRepository(session))
     return service.get_details(opportunity_id)
+
+
+# Saved Opportunities API
+@app.get("/api/saved")
+def get_saved_opportunities(session=Depends(get_session)):
+    """Retrieve all opportunities saved by the demo student."""
+    service = get_saved_service(session)
+    return service.list_saved(DEMO_STUDENT_ID)
+
+
+@app.post("/api/saved/{opportunity_id}")
+def save_opportunity(opportunity_id: str, session=Depends(get_session)):
+    """Save an opportunity to the student's bookmarks."""
+    service = get_saved_service(session)
+    return service.save_opportunity(DEMO_STUDENT_ID, opportunity_id)
+
+
+@app.delete("/api/saved/{opportunity_id}")
+def remove_saved_opportunity(opportunity_id: str, session=Depends(get_session)):
+    """Remove an opportunity from the student's bookmarks."""
+    service = get_saved_service(session)
+    return service.remove_opportunity(DEMO_STUDENT_ID, opportunity_id)

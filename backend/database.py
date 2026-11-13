@@ -23,3 +23,9 @@ class Opportunity(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     data: Mapped[dict] = mapped_column(JSON)
 
+class SavedOpportunity(Base):
+    __tablename__ = "saved_opportunities"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(String, nullable=False)
+    student_id: Mapped[str] = mapped_column(String, nullable=False)

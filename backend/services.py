@@ -154,3 +154,131 @@ class SearchFilterService:
             results.append(opportunity)
 
         return results
+
+
+# SavedOpportunityService for saving, retrieving, and removing bookmarked opportunities.
+class SavedOpportunityService:
+    """
+    Business logic for saving, retrieving, and removing
+    bookmarked opportunities.
+    """
+
+    def __init__(
+        self,
+        saved_repository,
+        opportunity_repository
+    ):
+        self.saved_repository = saved_repository
+        self.opportunity_repository = opportunity_repository
+
+    def list_saved(self, student_id):
+        """Retrieve full opportunity details for a student's bookmarks."""
+
+        student_id = student_id.strip()
+
+        if not student_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Student ID is required."
+            )
+
+        saved_records = (
+            self.saved_repository.list_by_student(student_id)
+        )
+
+        opportunities = []
+
+        for record in saved_records:
+            opportunity = self.opportunity_repository.get(
+                record.opportunity_id
+            )
+
+            if opportunity is not None:
+                opportunities.append(opportunity)
+
+        return opportunities
+
+    def save_opportunity(
+        self,
+        student_id,
+        opportunity_id
+    ):
+        """Save an existing opportunity without creating duplicates."""
+
+        student_id = student_id.strip()
+        opportunity_id = opportunity_id.strip()
+
+        if not student_id or not opportunity_id:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Student ID and Opportunity ID are required."
+                )
+            )
+
+        opportunity = self.opportunity_repository.get(
+            opportunity_id
+        )
+
+        if opportunity is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Opportunity not found."
+            )
+
+        existing = (
+            self.saved_repository.get_by_student_and_opportunity(
+                student_id,
+                opportunity_id
+            )
+        )
+
+        if existing is not None:
+            return {
+                "message": "Opportunity already saved.",
+                "opportunity": opportunity
+            }
+
+        self.saved_repository.save(
+            student_id,
+            opportunity_id
+        )
+
+        return {
+            "message": "Opportunity saved successfully.",
+            "opportunity": opportunity
+        }
+
+    def remove_opportunity(
+        self,
+        student_id,
+        opportunity_id
+    ):
+        """Remove an opportunity from a student's saved list."""
+
+        student_id = student_id.strip()
+        opportunity_id = opportunity_id.strip()
+
+        if not student_id or not opportunity_id:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Student ID and Opportunity ID are required."
+                )
+            )
+
+        removed = self.saved_repository.remove(
+            student_id,
+            opportunity_id
+        )
+
+        if not removed:
+            raise HTTPException(
+                status_code=404,
+                detail="Saved opportunity not found."
+            )
+
+        return {
+            "message": "Opportunity removed successfully.",
+            "opportunity_id": opportunity_id
+        }

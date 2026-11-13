@@ -7,7 +7,7 @@ import StudentProfile from "./components/StudentProfile";
 import { recommendations } from "./components/opportunities";
 import { tajAdaptedOpportunities } from "./components/tajOpportunities";
 import "./App.css";
-import { getProfile, getRecommendations } from "./api";
+import { getProfile, getRecommendations, getSavedOpportunities, saveOpportunity, removeSavedOpportunity } from "./api";
 
 const allOpportunities = [...recommendations, ...tajAdaptedOpportunities];
 const categoryNames = {
@@ -61,10 +61,37 @@ function AppPages() {
   const navigate = useNavigate();
   const location = useLocation();
   const [detailsReturnPath, setDetailsReturnPath] = useState("/discover");
-  const [savedIds, setSavedIds] = useState([]);
+  const [savedOpportunities, setSavedOpportunities] = useState([]);
+  const [savedStatus, setSavedStatus] = useState("loading");
+  const [savedError, setSavedError] = useState("");
+  const [pendingSaveIds, setPendingSaveIds] = useState([]);
+  const savedIds = savedOpportunities.map((item) => item.id);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [recommendationData, setRecommendationData] = useState(null);
   const [recommendationStatus, setRecommendationStatus] = useState("loading");
+
+  async function refreshSaved() {
+    const items = await getSavedOpportunities();
+    setSavedOpportunities(items);
+    setSavedStatus("ready");
+    setSavedError("");
+  }
+
+  useEffect(() => {
+    let active = true;
+    getSavedOpportunities()
+      .then((items) => {
+        if (!active) return;
+        setSavedOpportunities(items);
+        setSavedStatus("ready");
+      })
+      .catch(() => {
+        if (!active) return;
+        setSavedStatus("error");
+        setSavedError("Could not load saved opportunities. Check the backend connection.");
+      });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (location.pathname !== "/recommendations") return;
@@ -81,16 +108,24 @@ function AppPages() {
   }, [location.pathname]);
 
 
-  function toggleSave(opportunity) {
-    setSavedIds((previous) => previous.includes(opportunity.id)
-      ? previous.filter((id) => id !== opportunity.id)
-      : [...previous, opportunity.id]);
-  }
-
-  function openOpportunity(opportunity) {
-    setDetailsReturnPath(location.pathname);
-    setSelectedOpportunity(opportunity);
-    navigate("/details");
+  async function toggleSave(opportunity) {
+    const id = opportunity.id;
+    if (pendingSaveIds.length > 0 || savedStatus === "loading") return;
+    setPendingSaveIds((previous) => [...previous, id]);
+    setSavedError("");
+    try {
+      if (savedIds.includes(id)) {
+        await removeSavedOpportunity(id);
+      } else {
+        await saveOpportunity(id);
+      }
+      await refreshSaved();
+    } catch (error) {
+      try { await refreshSaved(); } catch { /* Keep the error visible. */ }
+      setSavedError(`Could not update bookmark for ${opportunity.title || id}. ${error.message}`);
+    } finally {
+      setPendingSaveIds((previous) => previous.filter((item) => item !== id));
+    }
   }
 
   function RecommendationsPage() {
@@ -114,21 +149,19 @@ function AppPages() {
   }
 
   function SavedPage() {
-    const savedOpportunities = Array.from(
-      new Map(allOpportunities.filter((item) => savedIds.includes(item.id)).map((item) => [item.id, item])).values()
-    );
-
     return (
       <main className="mc-saved" style={{ background: "#f6f8f5", color: "#173c2a", minHeight: "100vh", padding: "32px 24px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <h1 style={{ color: "#173c2a", marginBottom: 8 }}>Saved Opportunities</h1>
           <p style={{ color: "#526c5d", marginBottom: 28 }}>Review the opportunities you have bookmarked.</p>
-          {savedOpportunities.length === 0 ? (
+          {savedStatus === "loading" && <p role="status">Loading saved opportunities...</p>}
+          {savedStatus === "error" && <p role="alert">{savedError}</p>}
+          {savedStatus === "ready" && savedOpportunities.length === 0 ? (
             <div style={{ background: "white", border: "1px solid #dae5dc", borderRadius: 10, padding: 24 }}>
               <p>You haven't saved any opportunities yet.</p>
               <button className="mc-saved__button" type="button" onClick={() => navigate("/discover")}>Explore Opportunities</button>
             </div>
-          ) : (
+          ) : savedStatus === "ready" ? (
             <div style={{ display: "grid", gap: 16 }}>
               {savedOpportunities.map((item) => (
                 <article key={item.id} style={{ background: "white", border: "1px solid #dae5dc", borderRadius: 10, padding: 22 }}>
@@ -137,12 +170,12 @@ function AppPages() {
                   {item.description && <p>{item.description}</p>}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 16 }}>
                     <button className="mc-saved__button" type="button" onClick={() => openOpportunity(item)}>View Details</button>
-                    <button className="mc-saved__button mc-saved__button--secondary" type="button" onClick={() => toggleSave(item)}>Remove Saved</button>
+                    <button className="mc-saved__button mc-saved__button--secondary" type="button" disabled={pendingSaveIds.length > 0} onClick={() => toggleSave(item)}>Remove Saved</button>
                   </div>
                 </article>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </main>
     );
@@ -165,6 +198,12 @@ function AppPages() {
     );
   }
 
+  function openOpportunity(opportunity) {
+    setDetailsReturnPath(location.pathname);
+    setSelectedOpportunity(opportunity);
+    navigate("/details");
+  }
+
   return (
     <>
       {location.pathname !== "/recommendations" && (
@@ -179,6 +218,7 @@ function AppPages() {
         </div>
       </nav>
       )}
+      {savedError && (savedStatus !== "error" || location.pathname !== "/saved") && <p role="alert">{savedError}</p>}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<StudentProfile />} />
