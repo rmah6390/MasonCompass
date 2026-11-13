@@ -5,10 +5,6 @@
 **Feature:** Internship Discovery Oppertunity
 
 ---
-```mermaid
-flowchart TD
-    A[Start] --> B[End]
-```
 ## 1. Conceptual Class Diagram
 
 ```mermaid
@@ -33,5 +29,117 @@ classDiagram
     }
 
     Student "1" --> "*" Opportunity : views
+```
+---
+
+## 2. Detailed Class Diagram
+
+
+```mermaid
+classDiagram
+    class OpportunityDetails {
+        +opportunity
+        +returnTo
+        +loading
+        +error
+        +fetchOpportunityDetails()
+        +displayOpportunity()
+    }
+
+    class OpportunityService {
+        +getOpportunityDetails(id)
+    }
+
+    class FastAPI {
+        +getOpportunity(id)
+        +seedSamples()
+    }
+
+    class OpportunityServiceBackend {
+        +get_details(id)
+    }
+
+    class OpportunityRepository {
+        +find_by_id(id)
+    }
+
+    class Opportunity {
+        +id
+        +title
+        +category
+        +organization
+        +description
+        +requirements
+        +deadline
+        +location
+        +major
+        +official_url
+    }
+
+    OpportunityDetails --> OpportunityService
+    OpportunityService --> FastAPI
+    FastAPI --> OpportunityServiceBackend
+    OpportunityServiceBackend --> OpportunityRepository
+    OpportunityRepository --> Opportunity
+```
+---
+
+## 3. Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor Student
+    participant UI as OpportunityDetails (React)
+    participant FS as OpportunityService (Frontend)
+    participant API as FastAPI Backend
+    participant BS as OpportunityService (Backend)
+    participant Repo as OpportunityRepository
+    participant DB as Database
+
+    Student->>UI: Selects an opportunity
+    UI->>FS: Request opportunity details (ID)
+    FS->>API: GET /api/opportunities/{id}
+    API->>BS: get_details(id)
+    BS->>Repo: find_by_id(id)
+    Repo->>DB: Query opportunity
+    DB-->>Repo: Return opportunity record
+    Repo-->>BS: Return opportunity
+    BS-->>API: Return formatted details
+    API-->>FS: JSON response
+    FS-->>UI: Return opportunity data
+    UI-->>Student: Display opportunity details
+```
+---
+
+## 4. Layered Architecture Diagram
+
+```mermaid
+flowchart TD
+    A[Student] --> B
+
+    subgraph UI["Presentation Layer"]
+        B[OpportunityDetails.jsx]
+        C[opportunityService.js]
+        B --> C
+    end
+
+    subgraph BL["Business Logic Layer"]
+        D[FastAPI Endpoint]
+        E[OpportunityService]
+        D --> E
+    end
+
+    subgraph PL["Persistence Layer"]
+        F[OpportunityRepository]
+        G[(Database)]
+        F --> G
+    end
+
+    C -->|HTTP Request| D
+    E --> F
+    F -->|Opportunity Data| E
+    E --> D
+    D --> C
+    C --> B
 ```
 ---
