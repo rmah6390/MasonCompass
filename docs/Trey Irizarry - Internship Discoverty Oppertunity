@@ -7,7 +7,7 @@
 ---
 ```mermaid
 flowchart TD
-    A[Start] -->B[End]
+    A[Start] -->B [End]
 ```
 ## 1. Conceptual Class Diagram
 
