@@ -1,1 +1,29 @@
+# MasonCompass | Internship Discovery Oppertunity
 
+**CS 321 – Deliverable 04**  
+**Author:** Trey Irizarry 
+**Feature:** Internship Discovery Oppertunity
+
+---
+
+## 1. Conceptual Class Diagram
+
+
+classDiagram
+    class Student {
+        studentProfile
+    }
+
+    class Opportunity {
+        id
+        title
+        category
+        organization
+        description
+        requirements
+        deadline
+        location
+        major
+    }
+
+    Student --> Opportunity : views
