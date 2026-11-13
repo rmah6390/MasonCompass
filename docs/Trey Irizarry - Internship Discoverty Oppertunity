@@ -29,3 +29,4 @@ classDiagram
 
     Student "1" --> "*" Opportunity : views
 ```
+---
